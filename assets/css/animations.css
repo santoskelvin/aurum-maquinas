@@ -1,0 +1,104 @@
+/* ============================================
+   ANIMAÇÕES LEVES E UNIVERSAIS
+   ============================================ */
+
+/* Acessibilidade: Respeitar preferência de movimento reduzido */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   FADE-IN BÁSICO
+   ============================================ */
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================
+   FADE-UP LEVE
+   ============================================ */
+
+.fade-up {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================
+   FADE-BOTTOM
+   ============================================ */
+
+.fade-bottom {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-bottom.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================
+   HOVER SUAVE PARA BOTÕES
+   ============================================ */
+
+.btn {
+  transition: opacity 0.25s ease, transform 0.25s ease, background-color 0.25s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* ============================================
+   SUAVIZAÇÃO DE OPACIDADE E TRANSFORM
+   ============================================ */
+
+.smooth-transition {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* ============================================
+   DELAYS PARA ANIMAÇÕES ESCALONADAS
+   ============================================ */
+
+.fade-in-delay-1 {
+  transition-delay: 0.1s;
+}
+
+.fade-in-delay-2 {
+  transition-delay: 0.2s;
+}
+
+.fade-in-delay-3 {
+  transition-delay: 0.3s;
+}
+
+.fade-in-delay-4 {
+  transition-delay: 0.4s;
+}
+

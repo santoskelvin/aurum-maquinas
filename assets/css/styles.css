@@ -1,0 +1,1019 @@
+/* ============================================
+   NOTA: Minificar CSS em produção
+   ============================================ */
+
+/* ============================================
+   1. RESET
+   ============================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ============================================
+   2. DESIGN TOKENS
+   ============================================ */
+
+:root {
+  /* Cores */
+  --color-primary: #C39A3B;
+  --color-dark: #0F1115;
+  --color-light: #FFFFFF;
+  --color-sand: #F5F3EF;
+  --color-muted: #4A4F55;
+
+  /* Layout */
+  --max-width: 1200px;
+  --radius-sm: 8px;
+
+  /* Escala de espaçamentos responsiva */
+  --space-xs: 8px;
+  --space-sm: 16px;
+  --space-md: 32px;
+  --space-lg: 64px;
+  --space-xl: 96px;
+}
+
+/* Acessibilidade: Respeitar preferência de movimento reduzido */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+/* ============================================
+   3. TIPOGRAFIA
+   ============================================ */
+
+body {
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--color-dark);
+  background: var(--color-light);
+  line-height: 1.6;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  color: var(--color-dark);
+}
+
+h1 {
+  font-family: "Inter", system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 3rem;
+  /* 48px */
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-weight: 600;
+  font-size: 2rem;
+  /* 32px */
+}
+
+h3 {
+  font-weight: 600;
+  font-size: 1.5rem;
+  /* 24px */
+}
+
+p {
+  line-height: 1.8;
+  margin-bottom: 1rem;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+/* Links globais */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+
+a:hover {
+  color: var(--color-dark);
+}
+
+/* ============================================
+   4. CONTAINER PADRÃO
+   ============================================ */
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* ============================================
+   5. SEÇÕES - ESPAÇAMENTO PADRONIZADO
+   ============================================ */
+
+section {
+  padding: var(--space-xl) 0;
+  /* Desktop: 96px */
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+section:first-of-type {
+  border-top: none;
+}
+
+section.hero {
+  padding: 0;
+  border-top: none;
+}
+
+.section-title {
+  font-size: 2rem;
+  /* 32px */
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: var(--space-lg);
+  text-align: left;
+  color: var(--color-dark);
+}
+
+.section-text {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  color: var(--color-muted);
+}
+
+/* ============================================
+   6. HERO
+   ============================================ */
+
+.hero {
+  position: relative;
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0;
+}
+
+.hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.hero-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: contrast(0.9) brightness(0.5);
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.2));
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding-top: var(--space-lg);
+  padding-bottom: var(--space-lg);
+  color: var(--color-light);
+}
+
+.hero-title {
+  font-size: 3rem;
+  /* 48px */
+  font-weight: 700;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  color: var(--color-light);
+  letter-spacing: -0.02em;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
+  line-height: 1.1;
+}
+
+.hero-sub {
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 1.5rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2);
+  line-height: 1.6;
+}
+
+.hero-tagline {
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  margin-bottom: 3rem;
+  color: var(--color-light);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.hero-ctas {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ============================================
+   7. BOTÕES
+   ============================================ */
+
+.btn {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-align: center;
+  border-radius: var(--radius-sm);
+}
+
+.btn-primary {
+  background-color: #D4A44E;
+  color: var(--color-dark);
+  padding: 1rem 2rem;
+  border-radius: var(--radius-sm);
+}
+
+.btn-primary:hover {
+  background-color: #B88A3C;
+  color: var(--color-dark);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--color-dark);
+  border: 1px solid var(--color-dark);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-dark);
+  color: var(--color-light);
+  transform: translateY(-2px);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--color-light);
+  border: 1px solid #D4A44E;
+  padding: 1rem 2rem;
+  border-radius: var(--radius-sm);
+}
+
+.btn-outline:hover {
+  background-color: #D4A44E;
+  color: var(--color-dark);
+  transform: translateY(-2px);
+}
+
+.btn-cta {
+  background-color: var(--color-primary);
+  color: var(--color-dark);
+  font-size: 1.1rem;
+  padding: 1.2rem 2.5rem;
+}
+
+.btn-cta:hover {
+  background-color: var(--color-dark);
+  color: var(--color-light);
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   8. GRID
+   ============================================ */
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3rem;
+}
+
+/* ============================================
+   9. SEÇÕES ESPECÍFICAS
+   ============================================ */
+
+/* Por que a AURUM existe */
+.why-aurum {
+  background-color: var(--color-light);
+}
+
+/* O que você recebe na prática */
+.what-you-get {
+  background-color: var(--color-sand);
+}
+
+.benefits-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-sm);
+  max-width: 800px;
+}
+
+.benefit-item {
+  font-size: 1.1rem;
+  padding: 16px 20px;
+  color: var(--color-dark);
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.25s ease;
+}
+
+.benefit-item:hover {
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.05);
+}
+
+/* Nossos serviços */
+.our-services {
+  background-color: var(--color-light);
+}
+
+.services-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.service-card {
+  background: #FFFFFF;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.service-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+.service-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #D4A44E;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: var(--space-xs);
+  flex-shrink: 0;
+}
+
+.service-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-dark);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.service-card p {
+  font-size: 1rem;
+  color: var(--color-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Passos */
+.steps-section {
+  background-color: var(--color-light);
+}
+
+.steps-widget {
+  list-style: none;
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+  padding-left: 0;
+}
+
+.steps-widget::before {
+  content: '';
+  position: absolute;
+  left: 30px;
+  top: 60px;
+  bottom: 60px;
+  width: 2px;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 0;
+}
+
+.step {
+  position: relative;
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.step:last-child {
+  margin-bottom: 0;
+}
+
+.step.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.step-index {
+  flex-shrink: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #D4A44E;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  z-index: 1;
+  position: relative;
+}
+
+.step-content {
+  flex: 1;
+  background: #fff;
+  border-radius: 8px;
+  padding: var(--space-md);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.step-content h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: var(--space-xs);
+  color: var(--color-dark);
+}
+
+.step-content p {
+  font-size: 1rem;
+  color: var(--color-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Por que confiar na AURUM */
+.why-trust {
+  background-color: var(--color-sand);
+}
+
+.trust-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-sm);
+  max-width: 900px;
+}
+
+.trust-item {
+  font-size: 1.1rem;
+  padding: 20px 24px;
+  color: var(--color-dark);
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.25s ease;
+  position: relative;
+  padding-left: 40px;
+}
+
+.trust-item::before {
+  content: "•";
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-primary);
+  font-size: 1.5rem;
+  line-height: 1;
+  font-weight: bold;
+}
+
+.trust-item:hover {
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.05);
+}
+
+/* Métricas */
+.metrics-section {
+  background-color: var(--color-light);
+}
+
+.metrics-widget {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+  background: #FAFAFA;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  padding: var(--space-lg);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.metrics-widget:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.metric {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.metric-value {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--color-dark);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.metric-label {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--color-muted);
+  line-height: 1.4;
+}
+
+/* Gráficos de Rentabilidade */
+.charts-section {
+  background-color: var(--color-light);
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.chart-card {
+  background: #FFFFFF;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.chart-card h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-dark);
+  margin: 0;
+  text-align: center;
+}
+
+.bar-chart {
+  width: 100%;
+  height: 160px;
+  display: block;
+}
+
+/* Para quem é a AURUM */
+.who-is-for {
+  background-color: var(--color-light);
+}
+
+.target-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-sm);
+  max-width: 900px;
+  margin-top: 1.5rem;
+}
+
+.target-item {
+  font-size: 1.1rem;
+  padding: 16px 20px;
+  color: var(--color-dark);
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.25s ease;
+}
+
+.target-item:hover {
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.05);
+}
+
+/* Depoimentos */
+.testimonials {
+  background-color: var(--color-sand);
+}
+
+.testimonials-slider {
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.slides {
+  display: flex;
+  overflow: hidden;
+  transition: transform 0.4s ease;
+}
+
+.testimonial {
+  min-width: 100%;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.testimonial-text {
+  font-size: 1.2rem;
+  font-style: italic;
+  color: var(--color-dark);
+  padding: 24px 32px;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.prev,
+.next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #D4A44E;
+  color: var(--color-dark);
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.25s ease, transform 0.25s ease;
+  z-index: 2;
+}
+
+.prev {
+  left: -24px;
+}
+
+.next {
+  right: -24px;
+}
+
+.prev:hover,
+.next:hover {
+  background-color: #B88A3C;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.prev:active,
+.next:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+/* FAQ */
+.faq {
+  background-color: var(--color-light);
+}
+
+.faq-list {
+  max-width: 700px;
+}
+
+.faq-question {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 0;
+  color: var(--color-dark);
+  padding: 20px 24px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  padding-right: 48px;
+}
+
+.faq-question::after {
+  content: "+";
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  transition: transform 0.25s ease;
+}
+
+.faq-question:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.faq-question:first-child {
+  margin-top: 0;
+}
+
+.faq-answer {
+  font-size: 1.1rem;
+  color: var(--color-muted);
+  margin-bottom: 1rem;
+  padding: 0 24px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+  line-height: 1.6;
+}
+
+.faq-question:focus+.faq-answer,
+.faq-question:active+.faq-answer {
+  max-height: 500px;
+  padding: 20px 24px;
+  margin-bottom: 1rem;
+}
+
+.faq-question:focus::after,
+.faq-question:active::after {
+  transform: translateY(-50%) rotate(45deg);
+}
+
+/* Melhorar acessibilidade do FAQ */
+.faq-question:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Chamada Final / CTA */
+.final-cta {
+  background-color: var(--color-dark);
+  color: var(--color-light);
+  text-align: center;
+  padding: 5rem 1.6rem;
+}
+
+.cta-title {
+  font-size: 2rem;
+  /* 32px */
+  font-weight: 700;
+  margin-bottom: 2.5rem;
+  color: var(--color-light);
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ============================================
+   10. RESPONSIVIDADE
+   ============================================ */
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+
+  .container {
+    padding: 0 24px;
+  }
+
+  section {
+    padding: var(--space-lg) 0;
+    /* Mobile: 64px */
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    /* Mobile: 24px */
+    margin-bottom: var(--space-md);
+    letter-spacing: -0.01em;
+  }
+
+  h1 {
+    font-size: 2rem;
+    /* Mobile: reduzido */
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    /* Mobile: reduzido */
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    /* Mobile: reduzido */
+  }
+
+  .hero {
+    min-height: 50vh;
+  }
+
+  .hero-bg img {
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .hero-content {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+    /* Mobile: reduzido */
+    max-width: 90%;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-sub {
+    font-size: 1.1rem;
+    max-width: 90%;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-tagline {
+    margin-bottom: 2rem;
+  }
+
+  .hero-ctas {
+    flex-direction: column;
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .grid-2 {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .benefits-list {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+
+  .services-list {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .service-card {
+    padding: 24px;
+  }
+
+  .trust-list {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+
+  .target-list {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+  }
+
+  .metrics-widget {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+    padding: var(--space-md);
+  }
+
+  .metric-value {
+    font-size: 2.5rem;
+  }
+
+  .steps-widget {
+    padding-left: 60px;
+  }
+
+  .steps-widget::before {
+    left: 30px;
+    top: 30px;
+  }
+
+  .step {
+    flex-direction: row;
+    gap: var(--space-sm);
+    align-items: flex-start;
+  }
+
+  .step-index {
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+  }
+
+  .step-content {
+    width: 100%;
+    flex: 1;
+  }
+
+  .testimonials-slider {
+    max-width: 100%;
+    padding: 0 48px;
+  }
+
+  .prev {
+    left: 0;
+  }
+
+  .next {
+    right: 0;
+  }
+
+  .prev,
+  .next {
+    width: 40px;
+    height: 40px;
+    font-size: 1.25rem;
+  }
+
+  .testimonial {
+    max-width: 100%;
+  }
+
+  .testimonial-text {
+    font-size: 1.1rem;
+    padding: 20px 24px;
+  }
+
+  .charts-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .chart-card {
+    padding: 16px;
+  }
+
+  .chart-card h4 {
+    font-size: 1.1rem;
+  }
+
+  .cta-title {
+    font-size: 1.75rem;
+    /* Mobile: reduzido */
+  }
+}
