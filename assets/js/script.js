@@ -490,6 +490,56 @@ function initMicroCalculator() {
 }
 
 // ============================================
+// PLANOS ANIMATION (Stagger Effect)
+// ============================================
+
+function initPlanosAnimation() {
+  const planosSection = qs('.planos-section');
+  const planosHeader = qs('.planos-header');
+  const planoCards = qsa('.plano-card');
+  
+  if (!planosSection || planoCards.length === 0) {
+    return;
+  }
+  
+  // Respeitar preferência de movimento reduzido
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    planosHeader?.classList.add('animate-in');
+    planoCards.forEach(card => card.classList.add('animate-in'));
+    return;
+  }
+  
+  const observerOptions = {
+    threshold: 0.15,
+    rootMargin: '0px 0px -100px 0px'
+  };
+  
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        // Animar header primeiro
+        if (planosHeader) {
+          setTimeout(() => {
+            planosHeader.classList.add('animate-in');
+          }, 100);
+        }
+        
+        // Animar cards com stagger (um após o outro)
+        planoCards.forEach((card, index) => {
+          setTimeout(() => {
+            card.classList.add('animate-in');
+          }, 300 + (index * 150)); // 300ms delay inicial + 150ms entre cada card
+        });
+        
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+  
+  observer.observe(planosSection);
+}
+
+// ============================================
 // INIT FUNCTION
 // ============================================
 
@@ -650,6 +700,7 @@ function init() {
   initFAQAccordion();
   initMicroCalculator();
   initBackToTop();
+  initPlanosAnimation();
   
   // Verificar e completar animações se elementos já estão visíveis
   checkAndCompleteVisibleAnimations();
