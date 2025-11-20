@@ -1,8 +1,0 @@
-<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <clipPath id="bar-clip">
-      <rect x="0" y="0" width="20" height="20" rx="4" ry="4"/>
-    </clipPath>
-  </defs>
-  <rect x="0" y="0" width="20" height="20" rx="4" ry="4" fill="#B7791F" clip-path="url(#bar-clip)"/>
-</svg>
