@@ -557,8 +557,8 @@ function initPlanosAnimation() {
   }
   
   const observerOptions = {
-    threshold: 0.15,
-    rootMargin: '0px 0px -100px 0px'
+    threshold: 0.05,
+    rootMargin: '0px 0px 200px 0px' // Disparar 200px antes da seção entrar na viewport
   };
   
   const observer = new IntersectionObserver((entries) => {

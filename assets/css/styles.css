@@ -2986,9 +2986,16 @@ section.hero {
     backface-visibility: hidden;
   }
 
-  /* Remover transforms problemáticos no mobile */
-  * {
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
+  /* IMPORTANTE: NÃO aplicar backface-visibility em imagens/SVGs para manter qualidade vetorial */
+  /* Aplicar apenas em elementos que precisam de otimização GPU específica */
+  img,
+  svg,
+  .passo-card-image,
+  .illustration-img {
+    -webkit-backface-visibility: visible !important;
+    backface-visibility: visible !important;
+    /* Garantir renderização vetorial nítida */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
   }
 }
