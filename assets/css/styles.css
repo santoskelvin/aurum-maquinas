@@ -21,8 +21,7 @@ html {
   height: 100%;
   /* Otimizações para iOS */
   -webkit-text-size-adjust: 100%;
-  /* Permitir scroll com mouse wheel */
-  overscroll-behavior-y: none;
+  /* Permitir pull-to-refresh no mobile */
 }
 
 body {
@@ -38,8 +37,7 @@ body {
   /* Otimização crítica para mobile */
   min-height: 100vh;
   min-height: -webkit-fill-available;
-  /* Permitir scroll com mouse wheel */
-  overscroll-behavior-y: none;
+  /* Permitir pull-to-refresh no mobile */
 }
 
 img,
@@ -102,7 +100,7 @@ select {
 html,
 body {
   /* Permitir scroll com mouse wheel e touch */
-  overscroll-behavior: none;
+  /* Removido overscroll-behavior para permitir pull-to-refresh no mobile */
   /* Garantir que scroll funcione com mouse */
   -webkit-overflow-scrolling: touch;
   /* Não aplicar touch-action aqui para não bloquear mouse wheel */
