@@ -111,6 +111,12 @@ function initHeroParallax() {
     return;
   }
   
+  // Desabilitar completamente no mobile para evitar problemas de scroll
+  if (window.innerWidth <= 768) {
+    heroBg.style.transform = 'translateY(0px)';
+    return;
+  }
+  
   // Respeitar preferência de movimento reduzido
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     return;
@@ -522,6 +528,11 @@ function initBackToTop() {
 // ============================================
 
 function checkAndCompleteVisibleAnimations() {
+  // Desabilitar no mobile para melhor performance
+  if (window.innerWidth <= 768) {
+    return;
+  }
+  
   // Aguardar ScrollTrigger estar pronto
   if (typeof ScrollTrigger === 'undefined' || typeof gsap === 'undefined') {
     return;
@@ -614,7 +625,7 @@ function checkAndCompleteVisibleAnimations() {
     window.addEventListener('resize', processTriggers, { once: true, passive: true });
     window.addEventListener('orientationchange', () => {
       setTimeout(processTriggers, 200);
-    }, { once: true });
+    }, { once: true, passive: true });
   }
 }
 
@@ -705,12 +716,13 @@ if (window.innerWidth <= 768) {
   
   // Também verificar quando o scroll para (mobile pode ter scroll inicial)
   let scrollTimeout;
-  window.addEventListener('scroll', () => {
+  const scrollHandler = () => {
     clearTimeout(scrollTimeout);
     scrollTimeout = setTimeout(() => {
       checkAndCompleteVisibleAnimations();
     }, 150);
-  }, { passive: true });
+  };
+  window.addEventListener('scroll', scrollHandler, { passive: true });
 }
 
 

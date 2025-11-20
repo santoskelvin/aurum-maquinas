@@ -16,8 +16,10 @@ html {
   overflow-x: hidden;
   width: 100%;
   /* Garantir scroll vertical funciona normalmente */
-  overflow-y: auto;
+  overflow-y: scroll; /* scroll ao invés de auto para forçar scrollbar */
   height: 100%;
+  /* Otimizações para iOS */
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -26,9 +28,12 @@ body {
   margin: 0;
   padding: 0;
   /* Garantir scroll vertical funciona normalmente */
-  overflow-y: auto;
+  overflow-y: scroll; /* scroll ao invés de auto para forçar scrollbar */
   /* Prevenir problemas de scroll no iOS */
   -webkit-overflow-scrolling: touch;
+  /* Otimização crítica para mobile */
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
 }
 
 img,
@@ -71,7 +76,10 @@ video {
 
 /* Garantir que elementos não bloqueiem scroll touch */
 * {
-  touch-action: pan-y pan-x;
+  /* Permitir apenas scroll, sem zoom */
+  touch-action: pan-y;
+  /* Prevenir tap highlight no iOS */
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Elementos que precisam de comportamento touch específico */
@@ -81,6 +89,14 @@ input,
 textarea,
 select {
   touch-action: manipulation;
+}
+
+/* Seções devem permitir scroll sem interferência */
+section,
+main,
+article,
+div {
+  touch-action: pan-y;
 }
 
 /* Acessibilidade: Respeitar preferência de movimento reduzido */
@@ -225,6 +241,9 @@ section.hero {
   border-bottom: 1px solid rgba(15, 17, 21, 0.1);
   transition: all 0.25s ease;
   width: 100%;
+  /* Otimização para mobile - forçar GPU acceleration sem will-change */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 .site-header.scrolled {
@@ -478,7 +497,8 @@ section.hero {
   background-position: center center;
   background-repeat: no-repeat;
   z-index: 0;
-  will-change: transform;
+  /* Remover will-change que bloqueia scroll no mobile */
+  /* will-change: transform; */
   overflow: hidden;
 }
 
@@ -581,6 +601,9 @@ section.hero {
 
   .hero-bg-image {
     height: 130%;
+    /* Desabilitar qualquer transform no mobile */
+    transform: none !important;
+    -webkit-transform: none !important;
   }
 
   .hero-inner {
@@ -2838,7 +2861,10 @@ section.hero {
     width: 100%;
     box-sizing: border-box;
     /* Permitir que o touch passe para o scroll da página */
-    touch-action: pan-x pan-y;
+    touch-action: pan-x;
+    /* Otimização crítica para iOS */
+    position: relative;
+    z-index: 1;
   }
 
   .rentabilidade-grid::-webkit-scrollbar {
@@ -3056,5 +3082,19 @@ section.hero {
 
   .back-to-top {
     display: none !important;
+  }
+  
+  /* Garantir que elementos fixed não interfiram com scroll */
+  .site-header {
+    position: sticky;
+    /* Forçar GPU no iOS sem bloquear scroll */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  
+  /* Remover transforms problemáticos no mobile */
+  * {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
   }
 }
