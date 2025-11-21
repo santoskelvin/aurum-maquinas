@@ -537,212 +537,147 @@ function initMicroCalculator() {
 // Removida função específica - seção usa fade-up padrão do initFadeInObserver
 
 // ============================================
-// AURUM PATRIMONIAL ANIMATION (Stagger Effect)
+// UNIFIED ANIMATION OBSERVER (Otimizado)
 // ============================================
 
-function initAurumPatrimonialAnimation() {
-  const aurumSection = qs('.aurum-patrimonial');
-  const aurumHeader = qs('.aurum-patrimonial-header');
-  const aurumCards = qsa('.aurum-card');
+// Observer unificado para todas as animações com .animate-in
+function initUnifiedAnimationObserver() {
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   
-  if (!aurumSection || aurumCards.length === 0) {
-    return;
-  }
+  // Configurações de animação por seção
+  const animationConfigs = [
+    {
+      section: '.aurum-patrimonial',
+      header: '.aurum-patrimonial-header',
+      items: '.aurum-card',
+      stagger: 100,
+      threshold: 0.15,
+      rootMargin: '0px 0px -100px 0px'
+    },
+    {
+      section: '.faq-section',
+      header: '.faq-intro',
+      items: '.faq-item',
+      accordion: '.faq-accordion',
+      stagger: 50,
+      threshold: 0.15,
+      rootMargin: '0px 0px -100px 0px'
+    },
+    {
+      section: '.final-cta',
+      header: '.cta-title',
+      items: '.btn-cta',
+      stagger: 200,
+      threshold: 0.2,
+      rootMargin: '0px 0px -50px 0px'
+    },
+    {
+      section: '.site-footer',
+      header: '.footer-content',
+      items: '.footer-bottom',
+      stagger: 200,
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    }
+  ];
   
-  // Respeitar preferência de movimento reduzido
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    aurumHeader?.classList.add('animate-in');
-    aurumCards.forEach(card => card.classList.add('animate-in'));
-    return;
-  }
-  
-  const observerOptions = {
-    threshold: 0.15,
-    rootMargin: '0px 0px -100px 0px'
-  };
-  
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        // Animar header primeiro
-        if (aurumHeader) {
-          setTimeout(() => {
-            aurumHeader.classList.add('animate-in');
-          }, 100);
-        }
-        
-        // Animar cards com stagger (um após o outro)
-        aurumCards.forEach((card, index) => {
-          setTimeout(() => {
-            card.classList.add('animate-in');
-          }, 300 + (index * 150)); // 300ms delay inicial + 150ms entre cada card
-        });
-        
-        observer.unobserve(entry.target);
-      }
+  // Função para animar elementos com stagger otimizado
+  function animateWithStagger(elements, delay = 0, stagger = 0) {
+    if (!elements || elements.length === 0) return;
+    
+    elements.forEach((el, index) => {
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          el.classList.add('animate-in');
+        }, delay + (index * stagger));
+      });
     });
-  }, observerOptions);
+  }
   
-  observer.observe(aurumSection);
+  // Processar cada configuração
+  animationConfigs.forEach(config => {
+    const section = qs(config.section);
+    if (!section) return;
+    
+    const header = config.header ? qs(config.header, section) : null;
+    const items = config.items ? qsa(config.items, section) : [];
+    const accordion = config.accordion ? qs(config.accordion, section) : null;
+    
+    // Se preferência de movimento reduzido, aplicar imediatamente
+    if (prefersReducedMotion) {
+      if (header) header.classList.add('animate-in');
+      if (accordion) accordion.classList.add('animate-in');
+      items.forEach(item => item.classList.add('animate-in'));
+      return;
+    }
+    
+    // Criar observer para esta seção
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // Animar header primeiro
+          if (header) {
+            requestAnimationFrame(() => {
+              header.classList.add('animate-in');
+            });
+          }
+          
+          // Animar accordion (se existir)
+          if (accordion) {
+            requestAnimationFrame(() => {
+              setTimeout(() => {
+                accordion.classList.add('animate-in');
+              }, 200);
+            });
+          }
+          
+          // Animar items com stagger
+          if (items.length > 0) {
+            animateWithStagger(items, config.stagger, config.stagger);
+          }
+          
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: config.threshold,
+      rootMargin: config.rootMargin
+    });
+    
+    observer.observe(section);
+  });
 }
 
-// ============================================
-// FAQ ANIMATION
-// ============================================
+// Observer unificado - inicializado apenas uma vez
+let unifiedObserverInitialized = false;
+
+// Funções de compatibilidade (mantidas para não quebrar código existente)
+function initAurumPatrimonialAnimation() {
+  if (!unifiedObserverInitialized) {
+    initUnifiedAnimationObserver();
+    unifiedObserverInitialized = true;
+  }
+}
 
 function initFAQAnimation() {
-  const faqSection = qs('.faq-section');
-  const faqIntro = qs('.faq-intro');
-  const faqAccordion = qs('.faq-accordion');
-  const faqItems = qsa('.faq-item');
-  
-  if (!faqSection) {
-    return;
+  if (!unifiedObserverInitialized) {
+    initUnifiedAnimationObserver();
+    unifiedObserverInitialized = true;
   }
-  
-  // Respeitar preferência de movimento reduzido
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    faqIntro?.classList.add('animate-in');
-    faqAccordion?.classList.add('animate-in');
-    faqItems.forEach(item => item.classList.add('animate-in'));
-    return;
-  }
-  
-  const observerOptions = {
-    threshold: 0.15,
-    rootMargin: '0px 0px -100px 0px'
-  };
-  
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        // Animar intro primeiro
-        if (faqIntro) {
-          setTimeout(() => {
-            faqIntro.classList.add('animate-in');
-          }, 100);
-        }
-        
-        // Animar accordion
-        if (faqAccordion) {
-          setTimeout(() => {
-            faqAccordion.classList.add('animate-in');
-          }, 300);
-        }
-        
-        // Animar items com stagger
-        faqItems.forEach((item, index) => {
-          setTimeout(() => {
-            item.classList.add('animate-in');
-          }, 500 + (index * 80)); // 500ms delay inicial + 80ms entre cada item
-        });
-        
-        observer.unobserve(entry.target);
-      }
-    });
-  }, observerOptions);
-  
-  observer.observe(faqSection);
 }
-
-// ============================================
-// FINAL CTA ANIMATION
-// ============================================
 
 function initFinalCTAAnimation() {
-  const ctaSection = qs('.final-cta');
-  const ctaTitle = qs('.cta-title');
-  const ctaBtn = qs('.btn-cta');
-  
-  if (!ctaSection) {
-    return;
+  if (!unifiedObserverInitialized) {
+    initUnifiedAnimationObserver();
+    unifiedObserverInitialized = true;
   }
-  
-  // Respeitar preferência de movimento reduzido
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    ctaTitle?.classList.add('animate-in');
-    ctaBtn?.classList.add('animate-in');
-    return;
-  }
-  
-  const observerOptions = {
-    threshold: 0.2,
-    rootMargin: '0px 0px -50px 0px'
-  };
-  
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        // Animar título primeiro
-        if (ctaTitle) {
-          setTimeout(() => {
-            ctaTitle.classList.add('animate-in');
-          }, 100);
-        }
-        
-        // Animar botão depois
-        if (ctaBtn) {
-          setTimeout(() => {
-            ctaBtn.classList.add('animate-in');
-          }, 400);
-        }
-        
-        observer.unobserve(entry.target);
-      }
-    });
-  }, observerOptions);
-  
-  observer.observe(ctaSection);
 }
 
-// ============================================
-// FOOTER ANIMATION
-// ============================================
-
 function initFooterAnimation() {
-  const footer = qs('.site-footer');
-  const footerContent = qs('.footer-content');
-  const footerBottom = qs('.footer-bottom');
-  
-  if (!footer) {
-    return;
+  if (!unifiedObserverInitialized) {
+    initUnifiedAnimationObserver();
+    unifiedObserverInitialized = true;
   }
-  
-  // Respeitar preferência de movimento reduzido
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    footerContent?.classList.add('animate-in');
-    footerBottom?.classList.add('animate-in');
-    return;
-  }
-  
-  const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-  };
-  
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        // Animar conteúdo primeiro
-        if (footerContent) {
-          setTimeout(() => {
-            footerContent.classList.add('animate-in');
-          }, 100);
-        }
-        
-        // Animar bottom depois
-        if (footerBottom) {
-          setTimeout(() => {
-            footerBottom.classList.add('animate-in');
-          }, 400);
-        }
-        
-        observer.unobserve(entry.target);
-      }
-    });
-  }, observerOptions);
-  
-  observer.observe(footer);
 }
 
 // ============================================
@@ -784,7 +719,7 @@ function initBackToTop() {
 // ============================================
 
 function checkAndCompleteVisibleAnimations() {
-  // Desabilitar no mobile para melhor performance
+  // Desabilitar completamente no mobile para melhor performance
   if (window.innerWidth <= 768) {
     return;
   }
@@ -794,95 +729,29 @@ function checkAndCompleteVisibleAnimations() {
     return;
   }
 
-  // Função auxiliar para verificar visibilidade (compatível com mobile)
-  function isElementVisible(element) {
-    if (!element) return false;
-    const rect = element.getBoundingClientRect();
-    // Usar visualViewport se disponível (melhor para mobile)
-    const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-    const viewportWidth = window.visualViewport ? window.visualViewport.width : window.innerWidth;
-    
-    // Verificar se o elemento está visível na viewport
-    // No mobile, ser mais permissivo (threshold maior)
-    const threshold = window.innerWidth <= 768 ? 0.9 : 0.8;
-    
-    return (
-      rect.top < viewportHeight * threshold &&
-      rect.bottom > 0 &&
-      rect.left < viewportWidth &&
-      rect.right > 0
-    );
-  }
-
-  // Função para processar triggers
+  // Função para processar triggers (executada uma vez após delay)
   function processTriggers() {
     ScrollTrigger.refresh();
-    
-    // Obter todos os ScrollTriggers ativos
     const triggers = ScrollTrigger.getAll();
     
     triggers.forEach(trigger => {
-      if (trigger && trigger.trigger) {
+      if (trigger?.trigger) {
         const element = trigger.trigger;
+        const rect = element.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight * 0.8 && rect.bottom > 0;
         
-        if (isElementVisible(element)) {
-          // Verificar se há animação associada
-          if (trigger.animation) {
-            const anim = trigger.animation;
-            if (anim && anim.progress() === 0) {
-              anim.progress(1);
-            }
+        if (isVisible) {
+          // Completar animações que ainda não iniciaram
+          if (trigger.animation?.progress() === 0) {
+            trigger.animation.progress(1);
           }
-          
-          // Também verificar timelines
-          if (trigger.vars && trigger.vars.animation) {
-            const anim = trigger.vars.animation;
-            if (anim && anim.progress && anim.progress() === 0) {
-              anim.progress(1);
-            }
-          }
-          
-          // Forçar elementos filhos a ficarem visíveis (fallback para mobile)
-          const animatedChildren = element.querySelectorAll('[style*="opacity: 0"], [style*="opacity:0"]');
-          animatedChildren.forEach(child => {
-            if (isElementVisible(child)) {
-              gsap.set(child, { opacity: 1, visibility: 'visible' });
-            }
-          });
         }
       }
     });
-    
-    // Fallback adicional: garantir que seções visíveis tenham conteúdo visível
-    if (window.innerWidth <= 768) {
-      const sections = document.querySelectorAll('section');
-      sections.forEach(section => {
-        if (isElementVisible(section)) {
-          // Garantir que elementos animados dentro da seção estejam visíveis
-          const animatedElements = section.querySelectorAll('.fade-up, .fade-in, .fade-bottom');
-          animatedElements.forEach(el => {
-            if (isElementVisible(el)) {
-              gsap.set(el, { opacity: 1, visibility: 'visible', y: 0, x: 0 });
-            }
-          });
-        }
-      });
-    }
   }
 
-  // Verificar múltiplas vezes para garantir (especialmente importante no mobile)
-  setTimeout(processTriggers, 100);
-  setTimeout(processTriggers, 300);
-  setTimeout(processTriggers, 600);
-  setTimeout(processTriggers, 1000);
-  
-  // No mobile, também verificar após resize/orientation change
-  if (window.innerWidth <= 768) {
-    window.addEventListener('resize', processTriggers, { once: true, passive: true });
-    window.addEventListener('orientationchange', () => {
-      setTimeout(processTriggers, 200);
-    }, { once: true, passive: true });
-  }
+  // Verificar apenas uma vez após carregamento (consolidado)
+  setTimeout(processTriggers, 500);
 }
 
 // Prevenir scroll horizontal
@@ -895,26 +764,8 @@ function preventHorizontalScroll() {
   // A propriedade overflow-x: hidden no CSS é suficiente
 }
 
-// Garantir que scroll com mouse wheel funcione
-function ensureMouseWheelScroll() {
-  // Adicionar listener para garantir que wheel events não sejam bloqueados
-  document.addEventListener('wheel', (e) => {
-    // Não fazer nada, apenas garantir que o evento não seja bloqueado
-    // O navegador vai processar o scroll normalmente
-  }, { passive: true });
-  
-  // Também garantir para elementos específicos que podem ter problemas
-  const scrollableElements = document.querySelectorAll('section, main, article, .container');
-  scrollableElements.forEach(el => {
-    el.addEventListener('wheel', (e) => {
-      // Permitir scroll com mouse wheel
-    }, { passive: true });
-  });
-}
-
 function init() {
   preventHorizontalScroll();
-  ensureMouseWheelScroll();
   initSmoothScroll();
   initFadeInObserver();
   initHeaderBehavior();
@@ -925,10 +776,9 @@ function init() {
   initMicroCalculator();
   initBackToTop();
   // initPlanosAnimation(); // Removido - usa fade-up padrão
-  initAurumPatrimonialAnimation();
-  initFAQAnimation();
-  initFinalCTAAnimation();
-  initFooterAnimation();
+  
+  // Inicializar observer unificado uma única vez (otimizado)
+  initUnifiedAnimationObserver();
   
   // Verificar e completar animações se elementos já estão visíveis
   checkAndCompleteVisibleAnimations();
@@ -945,61 +795,9 @@ if (document.readyState === 'loading') {
   init();
 }
 
-// Verificar novamente após todas as animações serem inicializadas
+// Verificar após carregamento completo (apenas desktop)
 window.addEventListener('load', () => {
-  setTimeout(() => {
+  if (window.innerWidth > 768) {
     checkAndCompleteVisibleAnimations();
-  }, 300);
-});
-
-// Verificar também quando a página é restaurada com scroll
-window.addEventListener('pageshow', (event) => {
-  if (event.persisted) {
-    // Página foi restaurada do cache
-    setTimeout(() => {
-      checkAndCompleteVisibleAnimations();
-    }, 100);
   }
 });
-
-// No mobile, verificar após o viewport estabilizar (importante para navegadores mobile)
-if (window.innerWidth <= 768) {
-  // Aguardar viewport estabilizar (especialmente importante para navegadores mobile com barra de endereço)
-  let viewportStable = false;
-  let lastHeight = window.innerHeight;
-  
-  function checkViewportStable() {
-    const currentHeight = window.innerHeight;
-    if (Math.abs(currentHeight - lastHeight) < 5) {
-      if (!viewportStable) {
-        viewportStable = true;
-        setTimeout(() => {
-          checkAndCompleteVisibleAnimations();
-        }, 200);
-      }
-    } else {
-      lastHeight = currentHeight;
-      viewportStable = false;
-    }
-  }
-  
-  // Verificar viewport a cada 100ms por até 2 segundos
-  let checkCount = 0;
-  const viewportCheck = setInterval(() => {
-    checkViewportStable();
-    checkCount++;
-    if (checkCount >= 20 || viewportStable) {
-      clearInterval(viewportCheck);
-    }
-  }, 100);
-  
-  // Também verificar quando o scroll para (mobile pode ter scroll inicial)
-  let scrollTimeout;
-  const scrollHandler = () => {
-    clearTimeout(scrollTimeout);
-    scrollTimeout = setTimeout(() => {
-      checkAndCompleteVisibleAnimations();
-    }, 150);
-  };
-  window.addEventListener('scroll', scrollHandler, { passive: true });
-}
