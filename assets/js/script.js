@@ -375,34 +375,75 @@ function initFAQAccordion() {
   const items = qsa('.faq-item');
   if (items.length === 0) return;
 
-  function setState(item, shouldOpen) {
-    const trigger = item.querySelector('.faq-trigger');
-    const panel = item.querySelector('dd');
-    if (!trigger || !panel) return;
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    if (shouldOpen) {
-      // Abrir: primeiro remover classe, calcular altura, depois adicionar classe e animar
-      item.classList.remove('open');
-      panel.style.maxHeight = 'none';
-      const height = panel.scrollHeight;
-      panel.style.maxHeight = '0px';
-      item.classList.add('open');
-      trigger.setAttribute('aria-expanded', 'true');
-      
-      requestAnimationFrame(() => {
-        panel.style.maxHeight = `${height}px`;
-      });
-    } else {
-      // Fechar: animar para 0
-      const height = panel.scrollHeight;
-      panel.style.maxHeight = `${height}px`;
-      item.classList.remove('open');
-      trigger.setAttribute('aria-expanded', 'false');
-      
-      requestAnimationFrame(() => {
-        panel.style.maxHeight = '0px';
-      });
+  function animateHeight(panel, targetHeight, callback) {
+    function handler(event) {
+      if (event.propertyName === 'height') {
+        panel.removeEventListener('transitionend', handler);
+        if (typeof callback === 'function') {
+          callback();
+        }
+      }
     }
+    panel.addEventListener('transitionend', handler);
+    requestAnimationFrame(() => {
+      panel.style.height = targetHeight;
+    });
+  }
+
+  function openItem(item, animate = true) {
+    const panel = item.querySelector('dd');
+    if (!panel) return;
+
+    item.classList.add('open');
+    const targetHeight = `${panel.scrollHeight}px`;
+
+    if (!animate || prefersReducedMotion) {
+      panel.style.height = 'auto';
+      panel.style.opacity = '1';
+      panel.style.transform = 'translateY(0)';
+      return;
+    }
+
+    panel.style.height = '0px';
+    panel.style.opacity = '0';
+    panel.style.transform = 'translateY(-6px)';
+
+    animateHeight(panel, targetHeight, () => {
+      panel.style.height = 'auto';
+    });
+
+    requestAnimationFrame(() => {
+      panel.style.opacity = '1';
+      panel.style.transform = 'translateY(0)';
+    });
+  }
+
+  function closeItem(item, animate = true) {
+    if (!item.classList.contains('open')) return;
+    const panel = item.querySelector('dd');
+    if (!panel) return;
+
+    const currentHeight = panel.scrollHeight;
+    item.classList.remove('open');
+
+    if (!animate || prefersReducedMotion) {
+      panel.style.height = '0px';
+      panel.style.opacity = '0';
+      panel.style.transform = 'translateY(-6px)';
+      return;
+    }
+
+    panel.style.height = `${currentHeight}px`;
+    animateHeight(panel, '0px', () => {
+      panel.style.height = '0px';
+    });
+
+    requestAnimationFrame(() => {
+      panel.style.opacity = '0';
+      panel.style.transform = 'translateY(-6px)';
+    });
   }
 
   items.forEach((item) => {
@@ -410,18 +451,35 @@ function initFAQAccordion() {
     const panel = item.querySelector('dd');
     if (!trigger || !panel) return;
 
-    // Initialize heights for existing state
-    const isOpen = item.classList.contains('open');
-    if (isOpen && panel) {
-      panel.style.maxHeight = 'none';
-      const height = panel.scrollHeight;
-      panel.style.maxHeight = `${height}px`;
+    if (item.classList.contains('open')) {
+      panel.style.height = 'auto';
       panel.style.opacity = '1';
+      panel.style.transform = 'translateY(0)';
+      trigger.setAttribute('aria-expanded', 'true');
+    } else {
+      panel.style.height = '0px';
+      panel.style.opacity = '0';
+      panel.style.transform = 'translateY(-6px)';
+      trigger.setAttribute('aria-expanded', 'false');
     }
 
     trigger.addEventListener('click', () => {
-      const willOpen = !item.classList.contains('open');
-      items.forEach((accord) => setState(accord, accord === item ? willOpen : false));
+      const isOpen = item.classList.contains('open');
+      items.forEach((accord) => {
+        if (accord === item) {
+          if (isOpen) {
+            closeItem(accord);
+          } else {
+            openItem(accord);
+          }
+        } else {
+          closeItem(accord);
+        }
+        const accordTrigger = accord.querySelector('.faq-trigger');
+        if (accordTrigger) {
+          accordTrigger.setAttribute('aria-expanded', accord.classList.contains('open'));
+        }
+      });
     });
 
     trigger.addEventListener('keydown', (event) => {
