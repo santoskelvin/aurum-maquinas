@@ -754,6 +754,131 @@ function initFooterAnimation() {
 }
 
 // ============================================
+// CAROUSEL DE MÁQUINAS (Mobile)
+// ============================================
+
+function initMaquinasCarousel() {
+  const container = qs('#maquinas-container');
+  const prevBtn = qs('.carousel-prev');
+  const nextBtn = qs('.carousel-next');
+  
+  if (!container || !prevBtn || !nextBtn) {
+    return;
+  }
+  
+  // Verificar se está no mobile
+  function isMobile() {
+    return window.innerWidth <= 767;
+  }
+  
+  const cards = qsa('.maquina-card', container);
+  if (cards.length === 0) return;
+  
+  let currentIndex = 0;
+  
+  // Ir para slide específico
+  function goToSlide(index) {
+    if (index < 0 || index >= cards.length) return;
+    
+    currentIndex = index;
+    const card = cards[index];
+    
+    // Calcular posição de scroll para evitar overflow
+    const containerRect = container.getBoundingClientRect();
+    const cardRect = card.getBoundingClientRect();
+    const cardLeft = card.offsetLeft;
+    const containerPadding = 16; // padding do container
+    
+    // Scroll suave para o card, garantindo que fique centralizado
+    const targetScroll = cardLeft - containerPadding;
+    
+    container.scrollTo({
+      left: Math.max(0, targetScroll),
+      behavior: 'smooth'
+    });
+  }
+  
+  // Próximo slide
+  function nextSlide() {
+    const nextIndex = (currentIndex + 1) % cards.length;
+    goToSlide(nextIndex);
+  }
+  
+  // Slide anterior
+  function prevSlide() {
+    const prevIndex = (currentIndex - 1 + cards.length) % cards.length;
+    goToSlide(prevIndex);
+  }
+  
+  // Detectar mudança de slide via scroll
+  function handleScroll() {
+    if (!isMobile()) return;
+    
+    const containerRect = container.getBoundingClientRect();
+    const containerLeft = containerRect.left;
+    
+    // Encontrar o card mais visível
+    let mostVisibleIndex = 0;
+    let maxVisibility = 0;
+    
+    cards.forEach((card, index) => {
+      const cardRect = card.getBoundingClientRect();
+      const cardLeft = cardRect.left - containerLeft;
+      const cardRight = cardRect.right - containerLeft;
+      const cardWidth = cardRect.width;
+      
+      // Calcular visibilidade (quanto do card está visível)
+      const visibleLeft = Math.max(0, -cardLeft);
+      const visibleRight = Math.min(cardWidth, containerRect.width - cardLeft);
+      const visibility = Math.max(0, visibleRight - visibleLeft) / cardWidth;
+      
+      if (visibility > maxVisibility) {
+        maxVisibility = visibility;
+        mostVisibleIndex = index;
+      }
+    });
+    
+    if (mostVisibleIndex !== currentIndex) {
+      currentIndex = mostVisibleIndex;
+    }
+  }
+  
+  // Event listeners
+  prevBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    prevSlide();
+  });
+  
+  nextBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    nextSlide();
+  });
+  
+  // Detectar scroll para atualizar índice atual
+  let scrollTimeout;
+  container.addEventListener('scroll', () => {
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(handleScroll, 100);
+  }, { passive: true });
+  
+  // Atualizar ao redimensionar
+  let resizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      if (isMobile()) {
+        handleScroll();
+      }
+    }, 250);
+  });
+  
+  // Inicializar estado
+  if (isMobile()) {
+    handleScroll();
+  }
+}
+
+// ============================================
 // FORMULÁRIO DE CONTATO
 // ============================================
 
@@ -885,6 +1010,7 @@ function init() {
   initMobileNav();
   initHeroParallax();
   initHeroAnimations();
+  initMaquinasCarousel();
   initContatoForm();
   initBackToTop();
   

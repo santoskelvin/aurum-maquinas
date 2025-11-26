@@ -2025,6 +2025,18 @@ section.hero {
 }
 
 @media (max-width: 767px) {
+  .maquinas-section {
+    overflow-x: hidden;
+    overflow-y: visible;
+  }
+
+  .maquinas-section .container {
+    overflow-x: hidden;
+    overflow-y: visible;
+    width: 100%;
+    max-width: 100%;
+  }
+
   .maquinas-header {
     padding: 0 1rem;
   }
@@ -2047,16 +2059,34 @@ section.hero {
     gap: 1.5rem;
     padding: 0 1rem 1rem 1rem;
     scrollbar-width: none;
+    -ms-overflow-style: none;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
     touch-action: pan-x pan-y;
     position: relative;
     z-index: 1;
+    /* Garantir que não há scrollbar visível */
+    scrollbar-color: transparent transparent;
+    /* Esconder scrollbar em todos os navegadores */
+    -webkit-scrollbar-width: none;
   }
 
   .maquinas-grid::-webkit-scrollbar {
-    display: none;
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+  }
+
+  .maquinas-grid::-webkit-scrollbar-track {
+    display: none !important;
+    background: transparent !important;
+  }
+
+  .maquinas-grid::-webkit-scrollbar-thumb {
+    display: none !important;
+    background: transparent !important;
   }
 
   .maquinas-grid .maquina-card {
@@ -2075,15 +2105,13 @@ section.hero {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 1rem;
+    gap: 1.5rem;
     margin-top: 2rem;
     padding: 0 1rem;
   }
 
   .carousel-indicators {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
+    display: none;
   }
 }
 
@@ -2926,8 +2954,7 @@ section.hero {
 }
 
 .carousel-indicators {
-  display: flex;
-  gap: 0.5rem;
+  display: none;
 }
 
 .carousel-indicator {
@@ -2935,11 +2962,33 @@ section.hero {
   height: 8px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.3);
+  border: none;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
+  padding: 0;
+  /* Área de toque maior no mobile */
+  min-width: 32px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.carousel-indicator::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: inherit;
+  position: absolute;
 }
 
 .carousel-indicator.active {
+  background: var(--color-yellow-jd);
+}
+
+.carousel-indicator.active::before {
   background: var(--color-yellow-jd);
   transform: scale(1.2);
 }
@@ -4136,15 +4185,13 @@ section.hero {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 1rem;
+    gap: 1.5rem;
     margin-top: 2rem;
     padding: 0 1rem;
   }
 
   .carousel-indicators {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
+    display: none;
   }
 
   .chart-card {
