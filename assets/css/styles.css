@@ -2047,22 +2047,29 @@ section.hero {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  /* Card destacado mantém as mesmas dimensões dos demais */
   .maquina-card-highlight {
-    grid-column: 1 / -1;
+    grid-column: auto;
   }
 }
 
 @media (max-width: 767px) {
   .maquinas-section {
     overflow-x: hidden;
+    /* Esconder cards que saem da tela */
     overflow-y: visible;
+    /* Permitir scroll vertical */
   }
 
   .maquinas-section .container {
     overflow-x: hidden;
+    /* CRÍTICO: Esconder overflow horizontal */
     overflow-y: visible;
+    /* Permitir scroll vertical */
     width: 100%;
     max-width: 100%;
+    padding: 0;
+    /* Remover padding para permitir centralização correta */
   }
 
   .maquinas-header {
@@ -2079,72 +2086,31 @@ section.hero {
 
   .maquinas-grid {
     display: flex;
-    overflow-x: auto;
-    overflow-y: hidden;
-    /* Usar proximity ao invés de mandatory para não bloquear scroll vertical */
-    scroll-snap-type: x proximity;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
+    overflow: visible;
     gap: 1.5rem;
-    padding: 0 3rem 3rem 3rem;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    padding: 0;
     width: 100%;
-    max-width: 100%;
     box-sizing: border-box;
-    /* Permitir scroll em ambas direções - JS vai gerenciar o comportamento */
-    touch-action: manipulation;
-    /* Garantir que scroll vertical da página não seja bloqueado */
-    overscroll-behavior-x: contain;
-    overscroll-behavior-y: none;
     position: relative;
-    z-index: 1;
-    /* Garantir que não há scrollbar visível */
-    scrollbar-color: transparent transparent;
-    /* Esconder scrollbar em todos os navegadores */
-    -webkit-scrollbar-width: none;
-  }
-
-  .maquinas-grid::-webkit-scrollbar {
-    display: none !important;
-    width: 0 !important;
-    height: 0 !important;
-    background: transparent !important;
-  }
-
-  .maquinas-grid::-webkit-scrollbar-track {
-    display: none !important;
-    background: transparent !important;
-  }
-
-  .maquinas-grid::-webkit-scrollbar-thumb {
-    display: none !important;
-    background: transparent !important;
+    will-change: transform;
+    justify-content: flex-start;
+    align-items: center;
   }
 
   .maquinas-grid .maquina-card {
-    min-width: calc(100vw - 48px);
-    max-width: calc(100vw - 48px);
-    scroll-snap-align: start;
+    min-width: calc(100vw - 3rem);
+    max-width: calc(100vw - 3rem);
     flex-shrink: 0;
     box-sizing: border-box;
-    /* CRÍTICO: Permitir scroll vertical da página */
-    touch-action: pan-y pinch-zoom;
-    pointer-events: auto;
-  }
-
-  /* Garantir que todos os elementos dentro do card permitam scroll vertical */
-  .maquinas-grid .maquina-card * {
-    touch-action: inherit;
-  }
-
-  /* Exceção: imagens não devem capturar eventos */
-  .maquinas-grid .maquina-image {
-    touch-action: none;
+    margin: 0;
   }
 
   .maquina-card-highlight {
     transform: none;
+    /* Garantir mesmas dimensões dos outros cards */
+    min-width: calc(100vw - 3rem);
+    max-width: calc(100vw - 3rem);
+    margin: 0;
   }
 
   .carousel-controls {

@@ -777,155 +777,37 @@ function initMaquinasCarousel() {
   let currentIndex = 0;
   
   // ============================================
-  // SOLUÇÃO ROBUSTA: Detectar direção do scroll
+  // SOLUÇÃO SIMPLES: Navegação apenas por botões
+  // Sem detecção de direção, sem touch handlers complexos
+  // Scroll vertical funciona nativamente
   // ============================================
-  let touchStartX = 0;
-  let touchStartY = 0;
-  let touchStartTime = 0;
-  let isScrollingHorizontally = false;
-  let isScrollingVertically = false;
-  let touchMoved = false;
-  
-  // Detectar início do toque
-  container.addEventListener('touchstart', (e) => {
-    if (!isMobile()) return;
-    
-    const touch = e.touches[0];
-    touchStartX = touch.clientX;
-    touchStartY = touch.clientY;
-    touchStartTime = Date.now();
-    isScrollingHorizontally = false;
-    isScrollingVertically = false;
-    touchMoved = false;
-  }, { passive: true });
-  
-  // Detectar movimento do toque e determinar direção
-  container.addEventListener('touchmove', (e) => {
-    if (!isMobile() || touchMoved) return;
-    
-    const touch = e.touches[0];
-    const deltaX = Math.abs(touch.clientX - touchStartX);
-    const deltaY = Math.abs(touch.clientY - touchStartY);
-    
-    // Determinar direção baseado no primeiro movimento significativo
-    if (deltaX > 5 || deltaY > 5) {
-      touchMoved = true;
-      
-      // Se o movimento vertical é maior que o horizontal, é scroll vertical
-      if (deltaY > deltaX * 1.5) {
-        isScrollingVertically = true;
-        isScrollingHorizontally = false;
-        // Desabilitar snap temporariamente para permitir scroll vertical suave
-        container.style.scrollSnapType = 'none';
-      } 
-      // Se o movimento horizontal é maior, é scroll horizontal
-      else if (deltaX > deltaY * 1.5) {
-        isScrollingHorizontally = true;
-        isScrollingVertically = false;
-        // Garantir que snap está ativo para scroll horizontal
-        container.style.scrollSnapType = 'x proximity';
-      }
-    }
-  }, { passive: true });
-  
-  // Limpar flags ao final do toque
-  container.addEventListener('touchend', () => {
-    if (!isMobile()) return;
-    
-    // Reativar snap após um delay
-    setTimeout(() => {
-      container.style.scrollSnapType = 'x proximity';
-      touchStartX = 0;
-      touchStartY = 0;
-      isScrollingHorizontally = false;
-      isScrollingVertically = false;
-      touchMoved = false;
-    }, 100);
-  }, { passive: true });
-  
-  // Também limpar no touchcancel
-  container.addEventListener('touchcancel', () => {
-    if (!isMobile()) return;
-    
-    setTimeout(() => {
-      container.style.scrollSnapType = 'x proximity';
-      touchStartX = 0;
-      touchStartY = 0;
-      isScrollingHorizontally = false;
-      isScrollingVertically = false;
-      touchMoved = false;
-    }, 100);
-  }, { passive: true });
-  
-  // ============================================
-  // SOLUÇÃO CRÍTICA: Gerenciar links dentro dos cards
-  // ============================================
-  const cardLinks = qsa('.maquina-card .btn-link');
-  
-  cardLinks.forEach(link => {
-    let linkTouchStartX = 0;
-    let linkTouchStartY = 0;
-    let linkTouchStartTime = 0;
-    let linkTouchMoved = false;
-    
-    link.addEventListener('touchstart', (e) => {
-      if (!isMobile()) return;
-      
-      const touch = e.touches[0];
-      linkTouchStartX = touch.clientX;
-      linkTouchStartY = touch.clientY;
-      linkTouchStartTime = Date.now();
-      linkTouchMoved = false;
-    }, { passive: true });
-    
-    link.addEventListener('touchmove', (e) => {
-      if (!isMobile()) return;
-      
-      const touch = e.touches[0];
-      const deltaX = Math.abs(touch.clientX - linkTouchStartX);
-      const deltaY = Math.abs(touch.clientY - linkTouchStartY);
-      
-      // Se moveu mais de 10px, considerar como scroll, não clique
-      if (deltaX > 10 || deltaY > 10) {
-        linkTouchMoved = true;
-      }
-    }, { passive: true });
-    
-    link.addEventListener('click', (e) => {
-      if (!isMobile()) return;
-      
-      const touchDuration = Date.now() - linkTouchStartTime;
-      
-      // Se foi um drag (moveu muito) ou demorou muito, prevenir navegação
-      if (linkTouchMoved || touchDuration > 500) {
-        e.preventDefault();
-        e.stopPropagation();
-        linkTouchMoved = false;
-        return false;
-      }
-    });
-  });
   
   // Ir para slide específico
   function goToSlide(index) {
+    if (!isMobile()) return;
     if (index < 0 || index >= cards.length) return;
     
     currentIndex = index;
     const card = cards[index];
     
-    // Calcular posição de scroll para evitar overflow
-    const containerRect = container.getBoundingClientRect();
-    const cardRect = card.getBoundingClientRect();
-    const cardLeft = card.offsetLeft;
-    const containerPadding = 16; // padding do container
+    // Calcular offset para centralizar o card na viewport
+    const cardWidth = card.offsetWidth;
+    const gap = 24; // 1.5rem = 24px
+    const viewportWidth = window.innerWidth;
     
-    // Scroll suave para o card, garantindo que fique centralizado
-    const targetScroll = cardLeft - containerPadding;
+    // Posição do card no container (sem transform)
+    // Cada card ocupa cardWidth + gap, exceto o último que não tem gap depois
+    const cardPosition = index * (cardWidth + gap);
     
-    container.scrollTo({
-      left: Math.max(0, targetScroll),
-      behavior: 'smooth'
-    });
+    // Centralizar o card na viewport
+    // O centro do card deve estar no centro da viewport
+    // Offset = centro da viewport - (posição do card + metade da largura do card)
+    const cardCenter = cardPosition + (cardWidth / 2);
+    const viewportCenter = viewportWidth / 2;
+    const offset = viewportCenter - cardCenter;
+    
+    container.style.transform = `translateX(${offset}px)`;
+    container.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
   }
   
   // Próximo slide
@@ -940,78 +822,57 @@ function initMaquinasCarousel() {
     goToSlide(prevIndex);
   }
   
-  // Detectar mudança de slide via scroll
-  function handleScroll() {
-    if (!isMobile()) return;
-    
-    const containerRect = container.getBoundingClientRect();
-    const containerLeft = containerRect.left;
-    
-    // Encontrar o card mais visível
-    let mostVisibleIndex = 0;
-    let maxVisibility = 0;
-    
-    cards.forEach((card, index) => {
-      const cardRect = card.getBoundingClientRect();
-      const cardLeft = cardRect.left - containerLeft;
-      const cardRight = cardRect.right - containerLeft;
-      const cardWidth = cardRect.width;
-      
-      // Calcular visibilidade (quanto do card está visível)
-      const visibleLeft = Math.max(0, -cardLeft);
-      const visibleRight = Math.min(cardWidth, containerRect.width - cardLeft);
-      const visibility = Math.max(0, visibleRight - visibleLeft) / cardWidth;
-      
-      if (visibility > maxVisibility) {
-        maxVisibility = visibility;
-        mostVisibleIndex = index;
-      }
-    });
-    
-    if (mostVisibleIndex !== currentIndex) {
-      currentIndex = mostVisibleIndex;
-    }
-  }
-  
-  // Event listeners
+  // Event listeners para botões
   prevBtn.addEventListener('click', (e) => {
     e.preventDefault();
+    e.stopPropagation();
     prevSlide();
   });
   
   nextBtn.addEventListener('click', (e) => {
     e.preventDefault();
+    e.stopPropagation();
     nextSlide();
   });
   
-  // Detectar apenas scroll horizontal para atualizar índice atual
-  let scrollTimeout;
-  let lastScrollLeft = container.scrollLeft;
-  container.addEventListener('scroll', () => {
-    // Verificar se é scroll horizontal (não vertical)
-    const currentScrollLeft = container.scrollLeft;
-    if (currentScrollLeft !== lastScrollLeft) {
-      lastScrollLeft = currentScrollLeft;
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(handleScroll, 100);
+  // Esconder/mostrar controles baseado no tamanho da tela
+  const carouselControls = qs('.carousel-controls');
+  
+  function updateControlsVisibility() {
+    if (carouselControls) {
+      carouselControls.style.display = isMobile() ? 'flex' : 'none';
     }
-  }, { passive: true });
+    
+    // Resetar transform no desktop
+    if (!isMobile()) {
+      container.style.transform = 'none';
+      container.style.transition = 'none';
+      currentIndex = 0;
+    } else {
+      // Garantir que está mostrando o card atual centralizado no mobile
+      // Usar setTimeout para garantir que o layout esteja pronto
+      setTimeout(() => {
+        goToSlide(currentIndex);
+      }, 100);
+    }
+  }
+  
+  // Inicializar posição do primeiro card ao carregar
+  if (isMobile()) {
+    setTimeout(() => {
+      goToSlide(0);
+    }, 100);
+  }
   
   // Atualizar ao redimensionar
   let resizeTimeout;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-      if (isMobile()) {
-        handleScroll();
-      }
-    }, 250);
+    resizeTimeout = setTimeout(updateControlsVisibility, 200);
   });
   
-  // Inicializar estado
-  if (isMobile()) {
-    handleScroll();
-  }
+  // Inicializar
+  updateControlsVisibility();
 }
 
 // ============================================
