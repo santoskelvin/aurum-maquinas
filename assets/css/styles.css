@@ -1931,6 +1931,11 @@ section.hero {
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
+  /* Prevenir drag da imagem que bloqueia scroll */
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  user-select: none;
+  pointer-events: none;
 }
 
 .maquina-card:hover .maquina-image {
@@ -2013,6 +2018,9 @@ section.hero {
   align-items: center;
   gap: 0.5rem;
   transition: color 0.25s ease, transform 0.25s ease;
+  /* Permitir que eventos de scroll passem através dos links */
+  -webkit-user-drag: none;
+  -webkit-tap-highlight-color: rgba(255, 222, 0, 0.1);
 }
 
 
@@ -2073,7 +2081,8 @@ section.hero {
     display: flex;
     overflow-x: auto;
     overflow-y: hidden;
-    scroll-snap-type: x mandatory;
+    /* Usar proximity ao invés de mandatory para não bloquear scroll vertical */
+    scroll-snap-type: x proximity;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     gap: 1.5rem;
@@ -2083,11 +2092,11 @@ section.hero {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    /* Permitir apenas scroll horizontal, não interferir com scroll vertical da página */
-    touch-action: pan-x;
+    /* Permitir scroll em ambas direções - JS vai gerenciar o comportamento */
+    touch-action: manipulation;
     /* Garantir que scroll vertical da página não seja bloqueado */
     overscroll-behavior-x: contain;
-    overscroll-behavior-y: auto;
+    overscroll-behavior-y: none;
     position: relative;
     z-index: 1;
     /* Garantir que não há scrollbar visível */
@@ -2119,6 +2128,19 @@ section.hero {
     scroll-snap-align: start;
     flex-shrink: 0;
     box-sizing: border-box;
+    /* CRÍTICO: Permitir scroll vertical da página */
+    touch-action: pan-y pinch-zoom;
+    pointer-events: auto;
+  }
+
+  /* Garantir que todos os elementos dentro do card permitam scroll vertical */
+  .maquinas-grid .maquina-card * {
+    touch-action: inherit;
+  }
+
+  /* Exceção: imagens não devem capturar eventos */
+  .maquinas-grid .maquina-image {
+    touch-action: none;
   }
 
   .maquina-card-highlight {

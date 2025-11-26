@@ -776,6 +776,136 @@ function initMaquinasCarousel() {
   
   let currentIndex = 0;
   
+  // ============================================
+  // SOLUÇÃO ROBUSTA: Detectar direção do scroll
+  // ============================================
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchStartTime = 0;
+  let isScrollingHorizontally = false;
+  let isScrollingVertically = false;
+  let touchMoved = false;
+  
+  // Detectar início do toque
+  container.addEventListener('touchstart', (e) => {
+    if (!isMobile()) return;
+    
+    const touch = e.touches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+    touchStartTime = Date.now();
+    isScrollingHorizontally = false;
+    isScrollingVertically = false;
+    touchMoved = false;
+  }, { passive: true });
+  
+  // Detectar movimento do toque e determinar direção
+  container.addEventListener('touchmove', (e) => {
+    if (!isMobile() || touchMoved) return;
+    
+    const touch = e.touches[0];
+    const deltaX = Math.abs(touch.clientX - touchStartX);
+    const deltaY = Math.abs(touch.clientY - touchStartY);
+    
+    // Determinar direção baseado no primeiro movimento significativo
+    if (deltaX > 5 || deltaY > 5) {
+      touchMoved = true;
+      
+      // Se o movimento vertical é maior que o horizontal, é scroll vertical
+      if (deltaY > deltaX * 1.5) {
+        isScrollingVertically = true;
+        isScrollingHorizontally = false;
+        // Desabilitar snap temporariamente para permitir scroll vertical suave
+        container.style.scrollSnapType = 'none';
+      } 
+      // Se o movimento horizontal é maior, é scroll horizontal
+      else if (deltaX > deltaY * 1.5) {
+        isScrollingHorizontally = true;
+        isScrollingVertically = false;
+        // Garantir que snap está ativo para scroll horizontal
+        container.style.scrollSnapType = 'x proximity';
+      }
+    }
+  }, { passive: true });
+  
+  // Limpar flags ao final do toque
+  container.addEventListener('touchend', () => {
+    if (!isMobile()) return;
+    
+    // Reativar snap após um delay
+    setTimeout(() => {
+      container.style.scrollSnapType = 'x proximity';
+      touchStartX = 0;
+      touchStartY = 0;
+      isScrollingHorizontally = false;
+      isScrollingVertically = false;
+      touchMoved = false;
+    }, 100);
+  }, { passive: true });
+  
+  // Também limpar no touchcancel
+  container.addEventListener('touchcancel', () => {
+    if (!isMobile()) return;
+    
+    setTimeout(() => {
+      container.style.scrollSnapType = 'x proximity';
+      touchStartX = 0;
+      touchStartY = 0;
+      isScrollingHorizontally = false;
+      isScrollingVertically = false;
+      touchMoved = false;
+    }, 100);
+  }, { passive: true });
+  
+  // ============================================
+  // SOLUÇÃO CRÍTICA: Gerenciar links dentro dos cards
+  // ============================================
+  const cardLinks = qsa('.maquina-card .btn-link');
+  
+  cardLinks.forEach(link => {
+    let linkTouchStartX = 0;
+    let linkTouchStartY = 0;
+    let linkTouchStartTime = 0;
+    let linkTouchMoved = false;
+    
+    link.addEventListener('touchstart', (e) => {
+      if (!isMobile()) return;
+      
+      const touch = e.touches[0];
+      linkTouchStartX = touch.clientX;
+      linkTouchStartY = touch.clientY;
+      linkTouchStartTime = Date.now();
+      linkTouchMoved = false;
+    }, { passive: true });
+    
+    link.addEventListener('touchmove', (e) => {
+      if (!isMobile()) return;
+      
+      const touch = e.touches[0];
+      const deltaX = Math.abs(touch.clientX - linkTouchStartX);
+      const deltaY = Math.abs(touch.clientY - linkTouchStartY);
+      
+      // Se moveu mais de 10px, considerar como scroll, não clique
+      if (deltaX > 10 || deltaY > 10) {
+        linkTouchMoved = true;
+      }
+    }, { passive: true });
+    
+    link.addEventListener('click', (e) => {
+      if (!isMobile()) return;
+      
+      const touchDuration = Date.now() - linkTouchStartTime;
+      
+      // Se foi um drag (moveu muito) ou demorou muito, prevenir navegação
+      if (linkTouchMoved || touchDuration > 500) {
+        e.preventDefault();
+        e.stopPropagation();
+        linkTouchMoved = false;
+        return false;
+      }
+    });
+  });
+  
   // Ir para slide específico
   function goToSlide(index) {
     if (index < 0 || index >= cards.length) return;
