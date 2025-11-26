@@ -854,11 +854,17 @@ function initMaquinasCarousel() {
     nextSlide();
   });
   
-  // Detectar scroll para atualizar índice atual
+  // Detectar apenas scroll horizontal para atualizar índice atual
   let scrollTimeout;
+  let lastScrollLeft = container.scrollLeft;
   container.addEventListener('scroll', () => {
-    clearTimeout(scrollTimeout);
-    scrollTimeout = setTimeout(handleScroll, 100);
+    // Verificar se é scroll horizontal (não vertical)
+    const currentScrollLeft = container.scrollLeft;
+    if (currentScrollLeft !== lastScrollLeft) {
+      lastScrollLeft = currentScrollLeft;
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(handleScroll, 100);
+    }
   }, { passive: true });
   
   // Atualizar ao redimensionar

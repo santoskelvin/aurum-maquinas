@@ -2083,7 +2083,11 @@ section.hero {
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    touch-action: pan-x pan-y;
+    /* Permitir apenas scroll horizontal, não interferir com scroll vertical da página */
+    touch-action: pan-x;
+    /* Garantir que scroll vertical da página não seja bloqueado */
+    overscroll-behavior-x: contain;
+    overscroll-behavior-y: auto;
     position: relative;
     z-index: 1;
     /* Garantir que não há scrollbar visível */
