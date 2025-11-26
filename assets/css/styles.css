@@ -539,18 +539,7 @@ section.hero {
   background: linear-gradient(180deg, rgba(13, 27, 42, 0.75) 0%, rgba(13, 27, 42, 0.9) 100%);
   z-index: 1;
   pointer-events: none;
-  opacity: 0;
-  animation: heroOverlayFadeIn 1.5s ease-out forwards;
-}
-
-@keyframes heroOverlayFadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
+  opacity: 1;
 }
 
 .hero-inner {
@@ -2057,7 +2046,7 @@ section.hero {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     gap: 1.5rem;
-    padding: 0 1rem 1rem 1rem;
+    padding: 0 3rem 3rem 3rem;
     scrollbar-width: none;
     -ms-overflow-style: none;
     width: 100%;
@@ -2950,7 +2939,7 @@ section.hero {
 .carousel-prev:hover,
 .carousel-next:hover {
   background: var(--color-yellow-jd-dark);
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .carousel-indicators {
