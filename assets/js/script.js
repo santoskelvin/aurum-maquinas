@@ -31,31 +31,46 @@ function initSmoothScroll() {
 }
 
 // ============================================
-// SECTION OBSERVER (FADE IN)
+// SECTION OBSERVER (FADE IN) - Otimizado
 // ============================================
 
 function initFadeInObserver() {
-  const fadeElements = qsa('.fade-in, .fade-up, .fade-bottom');
+  // Respeitar preferência de movimento reduzido
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  
+  // Se movimento reduzido, mostrar tudo imediatamente
+  if (prefersReducedMotion) {
+    const fadeElements = qsa('.fade-up, .fade-in, .fade-bottom');
+    fadeElements.forEach(el => el.classList.add('visible'));
+    return;
+  }
+  
+  const fadeElements = qsa('.fade-up, .fade-in, .fade-bottom');
   
   if (fadeElements.length === 0) {
     return;
   }
   
+  // Configuração otimizada: threshold menor para melhor performance
   const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px 100px 0px' // Disparar 100px antes para animação mais fluida
+    threshold: 0.15,
+    rootMargin: '0px 0px -50px 0px' // Disparar quando 50px antes de entrar na viewport
   };
   
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
+        // Usar requestAnimationFrame para melhor performance
+        requestAnimationFrame(() => {
+          entry.target.classList.add('visible');
+        });
         // Unobserve após ativar para melhor performance
         observer.unobserve(entry.target);
       }
     });
   }, observerOptions);
   
+  // Observar todos os elementos de uma vez
   fadeElements.forEach(element => {
     observer.observe(element);
   });
@@ -739,6 +754,46 @@ function initFooterAnimation() {
 }
 
 // ============================================
+// FORMULÁRIO DE CONTATO
+// ============================================
+
+function initContatoForm() {
+  const form = qs('#form-contato');
+  if (!form) return;
+
+  const temMaquinasRadios = form.querySelectorAll('input[name="tem_maquinas"]');
+  const maquinasGroup = qs('#maquinas-group');
+
+  if (!temMaquinasRadios || !maquinasGroup) return;
+
+  // Mostrar/ocultar campo de máquinas
+  temMaquinasRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      if (radio.value === 'sim' && radio.checked) {
+        maquinasGroup.style.display = 'flex';
+      } else {
+        maquinasGroup.style.display = 'none';
+      }
+    });
+  });
+
+  // Validação básica no submit
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    
+    console.log('Dados do formulário:', data);
+    
+    // Aqui você pode adicionar lógica para enviar para um backend
+    alert('Formulário enviado com sucesso! Entraremos em contato em breve.');
+    form.reset();
+    maquinasGroup.style.display = 'none';
+  });
+}
+
+// ============================================
 // INIT FUNCTION
 // ============================================
 
@@ -830,10 +885,8 @@ function init() {
   initMobileNav();
   initHeroParallax();
   initHeroAnimations();
-  initFAQAccordion();
-  initMicroCalculator();
+  initContatoForm();
   initBackToTop();
-  // initPlanosAnimation(); // Removido - usa fade-up padrão
   
   // Inicializar observer unificado uma única vez (otimizado)
   initUnifiedAnimationObserver();
