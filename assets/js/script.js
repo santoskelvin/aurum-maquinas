@@ -192,6 +192,7 @@ function initMobileNav() {
   
   // Função para fechar o menu
   function closeMenu() {
+    const savedScrollY = document.body.style.top;
     mainNav.classList.remove('open');
     if (navOverlay) {
       navOverlay.classList.remove('active');
@@ -207,9 +208,9 @@ function initMobileNav() {
     document.body.style.width = '';
     
     // Restaurar posição do scroll se foi salva
-    const scrollY = document.body.style.top;
-    if (scrollY) {
-      window.scrollTo(0, parseInt(scrollY || '0') * -1);
+    if (savedScrollY) {
+      const scrollPosition = parseInt(savedScrollY, 10) * -1;
+      window.scrollTo(0, scrollPosition);
     }
   }
   
@@ -792,18 +793,11 @@ function initMaquinasCarousel() {
     
     // Calcular offset para centralizar o card na viewport
     const cardWidth = card.offsetWidth;
-    const gap = 24; // 1.5rem = 24px
-    const viewportWidth = window.innerWidth;
+    const cardLeft = card.offsetLeft;
+    const viewportCenter = window.innerWidth / 2;
+    const cardCenter = cardLeft + (cardWidth / 2);
     
-    // Posição do card no container (sem transform)
-    // Cada card ocupa cardWidth + gap, exceto o último que não tem gap depois
-    const cardPosition = index * (cardWidth + gap);
-    
-    // Centralizar o card na viewport
-    // O centro do card deve estar no centro da viewport
-    // Offset = centro da viewport - (posição do card + metade da largura do card)
-    const cardCenter = cardPosition + (cardWidth / 2);
-    const viewportCenter = viewportWidth / 2;
+    // Offset positivo move o container para a direita, negativo para a esquerda
     const offset = viewportCenter - cardCenter;
     
     container.style.transform = `translateX(${offset}px)`;
@@ -1001,10 +995,10 @@ function preventHorizontalScroll() {
 
 function init() {
   preventHorizontalScroll();
+  initMobileNav();
   initSmoothScroll();
   initFadeInObserver();
   initHeaderBehavior();
-  initMobileNav();
   initHeroParallax();
   initHeroAnimations();
   initMaquinasCarousel();
